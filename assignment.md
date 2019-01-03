@@ -18,13 +18,16 @@ You should make your own copy of the repository so that you can edit it and at t
 Ideally, you should regularly run steps 1-3. This will save your work as you go. And if you ever goof things up, you will have all the history, you can revert any file to how it was at any previous commit!
 
 ## Exercise 
-1. Write a program to prompt the user for hours and rate per hour using input to compute gross pay. Use 35 hours and a rate of 2.75 per hour to test the program (the pay should be 96.25). You should use input to read a string and float() to convert the string to a number. Do not worry about error checking or bad user data.
-Using atom text editor, open ./src/assignment_2.1.py and write your program.
+1. Write a program that repeatedly prompts a user for integer numbers until the user enters 'done'. Once 'done' is entered, print out the largest and smallest of the numbers. If the user enters anything other than a valid number catch it with a try/except and put out an appropriate message and ignore the number. Enter 7, 2, bob, 10, and 4 for input data.
+Using atom text editor, open ./src/assignment_3.1.py and write your program.
 <br>Compare your output with 'Desired Output'
 
     Desired Output:<br> 
-            <b>Pay: 96.25</b>
-                 
+
+        <b>Invalid input</b>
+        <b>Maximum is 10</b>
+        <b>Minimum is 2</b>
+
 2.1. Write a program to prompt the user for hours and rate per hour using input to compute gross pay. Pay the hourly rate for the hours up to 40 and 1.5 times the hourly rate for all hours worked above 40 hours. Use 45 hours and a rate of 10.50 per hour to test the program (the pay should be 498.75). You should use input to read a string and float() to convert the string to a number. Do not worry about error checking the user input - assume the user types numbers properly.
 Using atom text editor, open ./src/assignment_2.2.1.py and write your program.
 <br>Compare your output with 'Desired Output'
