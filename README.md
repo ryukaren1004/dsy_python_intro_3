@@ -1,613 +1,681 @@
-# Object Oriented Programming in Python
+# Topics
+* [Python Termimal (ipython)](#python-terminal)
+* [Advanced Python](#advanced-python)
+    * [Generators](#generators)
+    * [Looping tools](#looping-tools)
+    * [List comprehensions](#list-comprehensions)
+    * [Lambda functions](#lambda-functions)
+    * [Sets and Dictionaries](#sets-and-dictionaries)
+    * [Mutable vs Immutable](#mutable-vs-immutable)
+    * [Permutations and Combinations](#permutations-and-Combinations)
+    * [File I/O](#file-io)
+    * [Exception Handling](#exception-handling)
+* [Python Style](#python-style)
+* [Python Documentation](#documentation)
 
-In programming, there are typically two dominant paradigms to structure code: Functional and Object Oriented.  Functional programming eschews mutable state, i.e. variables, and passes information/logic through the input and output of functions. OO programming on the other hand embraces state (i.e. remembering) in the form of variables and objects.  For example, if I wanted to write a program that calculates some mathematical results, I might pass intermediate values from one function to the next through an internal variable.  
+# Python Terminal
 
-Often a language chooses to focus on one, [Java](http://docs.oracle.com/javase/tutorial/java/concepts/) is almost purely OO (although that is changing with recent versions) in that you cannot even write a function outside of a class.  Others are purely functional in that you are prevented from creating variables.  Many language leverage the strengths of both of these paradigms, Python included.
+We recommend using `ipython` rather than the standard python terminal to test out your code. Here are some cool things you can do with `ipython`:
 
-In Python, we have a bunch of built-in classes that we use every day. For example, Lists, Strings and Dictionaries are examples. We can create an instance of them and then use methods to operate on them.
+1. Press UP to cycle back through previous commands. If you start typing in the command and then press UP, it will only cycle through commands that start with those characters.
 
-We can create a new list or dictionary with what we call a *constructor*:
+1. Use `_` for a variable containing the result of the last executed command:
 
-```python
-d = dict()
+    ```python
+    In [1]: 9 * 54
+    Out[1]: 486
 
-L = list()
+    In [2]: _
+    Out[2]: 486
 
-# a more pythonic way of initializing an empty list:
-L = []
-```
+    In [3]: x = _
 
-We have methods that allow us to do things with and to the list. A *method* is a function which acts on a class. `append`, `pop` and `extend` are examples of *methods*.
+    In [4]: x
+    Out[4]: 486
+    ```
 
-```python
-In [1]: L = []
+1. You can re-run a line you've already run:
 
-In [2]: L.append('a')
+    ```python
+    In [10]: exec _i6
+    ```
 
-In [3]: L.pop()
-Out[3]: 'a'
+    This will run the code in line 6.
 
-In [4]: L.extend(['x', 'y', 'z'])
+1. You can edit the line before you re-run it:
 
-In [5]: L.pop(1)
-Out[5]: 'y'
-```
+    ```python
+    In [11]: rep 6
+    ```
 
-The built-in types are very generic and have many uses. However, sometimes we would like to define our own types that fit our specific scenario.
+1. This will run python code from a file:
 
-## Primer on Classes
+    ```python
+    In [1]: run example.py
+    ```
 
-Think of a class as a blueprint.  It is a scaffold for an house we would like to build.  And since we might want to create many houses that all are very similar (though might have a few properties that differ such as color, siding, porch, etc.) we want to remember how to easily build more houses.  The class is this blueprint and an object instantiation is an individual physical house.
+1. You can paste text using this:
 
-## Data and Computation (Nouns and Verbs)
+    ```python
+    In [2]: paste
+    ```
 
-### Object Oriented
+1. You can edit a function that you've already defined:
 
-In OO programming, Objects are the 'first class citizen' which encapsulate both data (state) and computation.  These are separated as variables and methods.  Programs are simply a collection of objects that pass state around through 'messages' (i.e. method calls).  Methods are functions that operate on state (data) to mutate an object.  Let us unpack that a bit.
+    ```python
+    In [3]: edit foo
+    ```
 
-![messages](http://2.bp.blogspot.com/-N2sHRubepUE/T3rFv_IjeYI/AAAAAAAAABc/qyetT9SvixU/s1600/OOP000%5B1%5D.jpg)
+    It will open in your chosen editor (defaults to vi)
 
-In plain English... when you call a method on an object, you send a message to it through its arguments (or lack thereof) to update its internal state (variables). E.g. the `mean()` method of the `Variance` class (see Appendix) sends a message to the `Variance` object telling it that it should update its state: `self.total_length` and `self.mean`.
+You can check out the ipython [documentation](http://ipython.org/documentation.html) or a [cheat sheet](http://damontallen.github.io/IPython-quick-ref-sheets/) of all the commands (there are a lot!)
 
-## Card Games as an OOP problem
 
-The example we will be looking at today is creating card games. In this scenario, it's very helpful to have classes to represent a playing card and a deck of cards.
+# Advanced Python
 
-Here is the syntax for creating a card class:
+This is a bunch of syntax and special tools that are available in python that come in very handy.
 
-```python
-class Card(object):
-    def __init__(self, number, suit):
-        self.suit = suit
-        self.number = number
-```
+## Generators
 
-Here the `suit` and `number` are what we call *instance variables*. That means that they are variables that are specific to each *instance* of the class (each card that you create will have its own values for suit and number).
-
-The `__init__` function is the *constructor*. It is called when you run the following code:
-
-```python
-card = Card('5', 'C')
-```
-
-Look at the deck class for an example where we also create *methods*.
-
-```python
-import random
-
-class Deck(object):
-    def __init__(self):
-        self.cards = []
-        for num in ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']:
-            for suit in 'cdhs':
-                self.cards.append(Card(num, suit))
-
-    def shuffle(self):
-        random.shuffle(self.cards)
-
-    def draw_card(self):
-        if not self.isempty():
-            return self.cards.pop()
-
-    def add_cards(self, cards):
-        self.cards.extend(cards)
-
-    def isempty(self):
-        return self.cards == []
-```
-
-Now we can use our `Deck` class:
+First look at this bit of code:
 
 ```python
-In [1]: deck = Deck()
-
-In [2]: deck.draw_card()
-Out[2]: AS
-
-In [3]: deck.draw_card()
-Out[3]: AH
-
-In [4]: deck.shuffle()
-
-In [5]: deck.draw_card()
-Out[5]: QC
-
-In [6]: deck.isempty()
-Out[6]: False
+for i in range(1000):
+    print i
 ```
 
-(Note that with this implementation, the cards go in order until you shuffle the deck.)
-
-
-## Magic methods
-
-In python, there are what we call *magic methods*.
-
-#### Length function
-
-Notice how you can use the `len` function on most built-in types to get the length (length of a list, number of items in a dictionary, length of a string). If you'd like to be able to do the same with your own class, you can implement the `__len__` method.
-
-You can add the following to the `Deck` class:
+The `range` function will create a list of length 1000 and then we iterate over it. This is very wasteful for space! We don't need to create a list of 1000 elements and store it in memory! We can use a *generator* to save the memory:
 
 ```python
-    def __len__(self):
-        return len(self.cards)
+for i in xrange(1000):
+    print i
 ```
 
-This enables you to use `len(deck)` and it will give you the number of cards in your deck.
+The `xrange` function will generate the next value when it's needed, but won't pre-generate everything like the `range` function.
 
-#### Comparisons
+You'll see other examples of generators below.
 
-You also may want to be able to compare two cards to see which is larger or if they have the same value. You can get this functionality by implementing the '__cmp__' function.
 
-Here is an implementation of this function for the `Card` class:
+## Looping tools
+
+There are a couple handy tools in python that help you clean up your code when you're looping through a list. First, when possible, use the most simple pythonic loop:
 
 ```python
-   def __cmp__(self, other):
-       return cmp(self.value_dict[self.number], self.value_dict[other.number])
+for item in L:
+    print item
 ```
 
-You can now run the following code:
+### Enumerate
+
+If you need to know the index, you've probably seen code like this:
 
 ```python
-In [1]: card1 = Card('5', 'c')
-In [2]: card2 = Card('7', 'd')
-In [3]: card3 = Card('7', 'h')
-
-In [4]: card1 > card2
-Out[4]: False
-
-In [5]: card2 == card3
-Out[5]: True
+for i in xrange(len(L)):
+    print i, L[i]
 ```
 
-#### String representation
-
-If you try to print your object, you will get something like this:
+But you should really use `enumerate` (a generator!):
 
 ```python
-In [1]: card = Card('A', 'd')
-
-In [2]: print card
-<Card object at 0x10a2ce210>
+for i, item in enumerate(L):
+    print i, item
 ```
 
-If you would like to be able to print out your object in a human-readable form, you need to create the `__repr__` method which will give the string representation. Here is an example repr method for the `Card` class:
+Isn't that cleaner?
+
+
+### Zip
+
+Let's say you have two lists and you want to loop over both of them at the same time. You could do this:
 
 ```python
-    def __repr__(self):
-        return "%s%s" % (self.number, self.suit)
+first_names = ['Giovanna', 'Ryan', 'Jon']
+last_names = ['Thron', 'Orban', 'Dinu']
+
+for i in xrange(len(first_names)):
+    print first_names[i], last_names[i]
 ```
 
-Now, this will happen when you try to print the card:
+But python has a handy `zip` function to zip two lists together:
 
 ```python
-In [1]: card = Card('A', 'd')
-
-In [2]: print card
-Ad
+In [3]: zip(first_names, last_names)
+Out[3]: [('Giovanna', 'Thron'), ('Ryan', 'Orban'), ('Jon', 'Dinu')]
 ```
 
-You can of course modify the output however you'd like, putting a space or symbol between the number and suit:
+If you're going to loop over it, you should use `izip` instead, since it's a generator. You'll need to import `izip` from the `itertools` module.
 
 ```python
-        return "|%s|%s|" % (self.number, self.suit)
+from itertools import izip
+
+for first, last in izip(first_names, last_names):
+    print first, last
 ```
 
-This gives an output like this: `|A|d|`.
-
-***For a full list of magic methods, take a look at [this blog post](http://www.rafekettler.com/magicmethods.html).***
-
-#### Card and Deck implementations
-
-You can find the code for the `Card` and `Deck` classes in [deck.py](src/deck.py).
-
-
-## How to structure your classes
-
-The hardest part of Object Oriented Programming is figuring out how to structure your classes and what methods you need.
-
-The general rules of thumb are:
-
-* nouns should become classes
-* verbs should become methods
-
-## Example: War Card Game
-
-We'll demonstrate how to do this by implementing the children's card game [war](http://en.wikipedia.org/wiki/War_(card_game)).
-
-If you're unfamiliar with the game, read the link or just play the game by running: `python war.py`
-
-It is a complete game of chance, so you will never have to make a decision.
-
-### Classes
-
-We've already created classes for a card and a deck.
-
-The other classes we will need are:
-
-* player
-* game
-
-#### The player class
-
-Let's look at the player class. First, what *instance variables* does it need? What does a player need to keep track of?
-
-* `hand`: a list of cards in the player's current deck
-* `discard`: a list of cards in the player's discard pile
-* `name`: the player's name (not essential)
-
-And what *methods* does the player class need?
-
-* `receive_card`
-* `play_card`
-
-The player class is implemented in [war_player.py](src/war_player.py). There are a couple other instance variables and methods there that turned out to be useful that aren't as essential as the ones noted above.
-
-#### The game class
-
-These are the important instance variables:
-
-* `player1` and `player2` (two instances of the `Player` class)
-* `pot`: the cards that are currently in play (they will be won by one of the two players at the end of the round)
-* `winner`: the player that has won, which will be `None` until the end of the game (this is not the only way to keep track of this information)
-
-
-These are the important methods:
-
-* `deal`: gives each player their starting decks
-* `play_round`: goes through one round of the game (each player plays a card, highest card wins. If they tie, each player plays 3 cards and then they try again.)
-* `play_game`: starts the game and calls `play_round` repeatedly until one player gets all the cards and is declared the winner.
-
-When you look at the code in [war.py](src/war.py), you'll notice there are a bunch of other functions. One thing you'll notice is that all of the displaying of the game was separated into separate methods (`display_play`, `display_receive`, `display_war` and `display_winner`). It's nice to separate out the display functions in case later you want to create a fancy UI. Then you don't have to modify any of the game functionality, just the display.
-
-You'll also notice that a few helper methods like `draw_card`, `draw_cards`, `war` and `give_cards` were created to simplify the code for the `play_round` method.
-
-
-## Testing!
-
-We will be using `nose` to test our code. The syntax is very simple. Basically, you need to write a function for each test you want to run. The challenge is to determine what the necessary tests are.
-
-When writing tests, you want to think about all the edge cases and make sure your code won't break. For example, for the `Card` and `Deck` classes, you want to test the following things:
-
-* Initializing a card sets the number and suit correctly
-* You get the correct string representation of a card
-* Comparisons work correctly (<, >, ==)
-* The deck is initialized correctly (has 52 unique cards)
-* Drawing a card works (you get a card and now the deck has one less card)
-
-You can use tests to make sure that you are implementing your code correctly and also to make sure that when you implement additional features you don't break anything.
-
-You can find test examples in [test_deck.py](src/test_deck.py) and [test_war.py](src/test_war.py).
-
-# Scope
-
-Scope can be thought of as the lifetime of a reference (i.e. variables, objects, and methods).  Python scope can take some getting used to but here is a quick cheatsheet on what the rules are for looking up a value.  Python uses lexical scoping and binds scope on declaration of a variable/reference (rather than on function execution).  The difference between lexical (static) and dynamic scope is beyond the scope of this course, but the wikipedia page has a concise [explanation][1].
-
-```bash
-x=1
-function g () { echo $x ; x=2 ; }
-function f () { local x=3 ; g ; }
-f # does this print 1, or 3?
-echo $x # does this print 1, or 2?
-```
-
-### Rules
-
-__LEGB Rule__
-
-__L: Local.__ (Names assigned in any way within a function (def or lambda)), and not declared global in that function.
-
-__E: Enclosing function locals.__ (Name in the local scope of any and all enclosing functions (def or lambda), from inner to outer.
-
-__G: Global (module).__ Names assigned at the top-level of a module file, or declared global in a def within the file.
-
-__B: Built-in (Python).__ Names preassigned in the built-in names module : open,range,SyntaxError,...
-
-Python uses lexical scoping and a variable is __bound__ when it is defined (or assigned to).  When in doubt always jump into a debugger (`ipdb.set_trace()`) at the point of you program in which you are uncertain and inspect the variables.  In Python, the `locals()` method tells you exactly what is in the local scope, and the globals() tells you everything that is in the global scope.
+If you want like a combination of zip and enumerate, you can do the following and have the index and the values:
 
 ```python
-def foo(arg):
-    x = 1
-    print locals()
+from itertools import izip, count
 
-foo(7)
-#=> {'arg': 7, 'x': 1}
-
-foo('bar')
-#=> {'arg': 'bar', 'x': 1}
+for i, first, last in izip(count(), first_names, last_names):
+    print i, first, last
 ```
 
-### Creating Scope
 
-In Python, you can create new scope by defining a function (`def ... or lambda`) or creating a class.  Think of each of these as adding layers to a wonderful scope onion (or maybe Russian dolls are a better analogy).
+## List comprehensions
 
-![matroyska dolls][4]
-
-You can never look down scope but can most always look up (unless you shadow a variable).  For example:
+For simple things, you can do your for loop on one line. Let's say you want to create a new list that has all the items from the first list doubled. You could do this:
 
 ```python
-x = "global"
-
-def new_scope(x):
-    print x
-    y = "I'm just hiding"
-    x = "shadow variable"
-    return x
-
-print x #=> "global"
-new_scope("argument") #=> "argument"
-
-print x #=> "global"
-
-print new_scope("argument")
-    #=> "argument"
-    #=> "shadow variable"
-
-print y #=> NameError: name 'y' is not defined
+doubled = []
+for item in L:
+    doubled.append(item * 2)
 ```
 
-### How do I get into the Scope club (with a velvet rope)
-
-#### Pass-by-reference vs. pass-by-value
-
-Most languages are either pass by reference or pass by value.  The difference being in pass-by-reference the argument can be mutated and it effects that variable up scope, whereas in pass-by-value creates a 'copy'.  Unfortunately Python is a mixture of these in something called 'pass-by-object-reference'.  Or rather:
-
->Object references are passed by value
-
-But that may not make more sense. If you ever have a question, it is often best to try it out in a python interpreter:
+But using a list comprehension, you can do this:
 
 ```python
-
-x = "global"
-
-def do_nothing(ll):
-    print x
-    return ll
-
-def return_list(ll):
-    ll = ["assign", "a", "list"]
-    return ll
-
-def mutate_list(ll):
-    ll.append("Messin with my list")
-    return ll
-
-new_list = ['foo', 'bar']
-
-print do_nothing(new_list) #=> "global"
-                           #=> ['foo', 'bar']
-print return_list(new_list) #=> ["assign", "a", "list"]
-print mutate_list(new_list) #=> ['foo', 'bar', "Messin with my list"]
+doubled = [item * 2 for item in L]
 ```
 
-I just showed you how to get into the scope club, to get out you can either mutate a object passed in, or the safest option is to return variables.
+### 2D list comprehensions
 
-This is a common source of confusion for people new to Python but the worst offender of breaking some of these conventions is `pandas`.  You should always read the docs of a new library to understand its own semantics and nuances.
-
-__[More info][3]__
-
-### What is that `self` thing you keep using
+You can similarly do a double for loop. This is what it would look like the standard way:
 
 ```python
-# from above...
-class Animal(object):
-    def __init__(self, name, emotion):
-        self.name = name
-        self.emotion = emotion
-
-    def speak(self):
-        print "My name is " + self.name
-
-    # self is replaced by the object
-    # the method is called on
-    def eat(self, food):
-        print "I " + self.emotion + " " + food
-
-frank = Animal("Frank", "adore")
-frank.speak() #=> "My name is Frank"
-
-# object is passed as first argument to a method call
-frank.eat("bananas") #-> Animal.eat(frank, "bananas")
-    #=> "I adore bananas"
+L = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+doubled = []
+for row in L:
+    row2 = []
+    for item in row:
+        row2.append(item * 2)
+    doubled.append(row2)
 ```
 
-The object a method is called on is always passed as the first argument (`self`).  In this case, the object `frank` of the class `Animal` is passed as the first argument to the method call `eat(...)`.  This ensures that we always explicitly have access to the object the method belongs to.  When we create a new object instantiation of the class `Animal`, we bind the variable `self` to the object created.  In this case, the call to `Animal("Frank")` binds the variable `self` to the returned object.  This instantiation also runs the code in the class's `__init__()` method implicitly.  `__init()__` is just a function though and we can (though it is very bad practice to) call it once a object has been created.
+And with a list comprehension:
 
 ```python
-class Person(object):
-    def __init__(self, name):
-        self.name = name
-        print "I am alive"
-
-jon = Person("Jon") #=> I am alive
-
-jon #=> <__main__.Person instance at 0x105addc20>
-
-jon.name #=> 'Jon'
-
-jon.__init__("Susie") #=> I am alive
-
-jon.name #=> 'Susie'
+doubled = [[item * 2 for item in row] for row in L]
 ```
 
-_More info: [http://freepythontips.wordpress.com/2013/08/07/the-self-variable-in-python-explained/](http://freepythontips.wordpress.com/2013/08/07/the-self-variable-in-python-explained/)_
-
-# Appendix
-
-Another handy tool when learning about scope and stacks is the [stack visualization tool](http://pythontutor.com) at pythontutor.com.  Here is a great [tutorial](http://cscircles.cemc.uwaterloo.ca/11b-how-functions-work/) on visually exploring variable scope in Python as you execute a program.  Scope gets more specific as you go down, i.e. the top of the image (`Global Frame`) is the top most scope and `sum_squared_error` is the most specific.  Each box on the left represents a different scope (created when we call a function).  The nested scopes can look up/out but the outer scopes cannot look in.  For example, `sum_squared_error` can access anything defined in any scope above it (unless it is shielded by another function or class) but the global scope cannot peek into the `sum_squared_error` function and its variables.  To move data/values/variables between scope you either pass arguments and return values: __function arguments -> down/into scope :: return values -> up/out scope__
-
-### Functional vs. OOP
-
-In functional programming, state never changes (programs are stateless).  Functions are 'first class citizens' and can actually be passed around like variables, used as arguments to a function, etc. (think `map()`, `reduce()`, `filter()`). Functions (and a program at large) is a series of operation to perform on an immutable data source. And functions can be passed around like data!
-
-### (Functional) Python
-```python
-def mean(data):
-    return reduce(float.__add__, data)/len(data)
-
-def sum_squared_error(data, mean):
-    return reduce(float.__add__, [ math.pow(num - mean, 2) for num in data])/len(data)
-
-def variance(data):
-    return sum_squared_error(data, mean(data))
-
-variance([1.,2.,3.,4.]) #=> 1.25
-```
-
-### (Object Oriented) Python
-```python
-class Variance(object):
-    def __init__(self, input_list):
-        self.data = input_list
-        self.total_length = 0
-        self.difference_sum = 0
-
-    def mean(self):
-        total = 0.0
-        for num in self.data:
-            total += num
-            self.total_length += 1
-        self.mean = total/self.total_length
-
-    def sum_squared_error(self):
-        for num in self.data:
-            self.difference_sum += math.pow(num - self.mean, 2)
-        self.variance = self.difference_sum / self.total_length
-
-    def compute_variance(self):
-        return self.variance
-
-variance_object = Variance([1.,2.,3.,4.])
-variance_object.mean()
-variance_object.sum_squared_error()
-variance_object.compute_variance() #=> 1.25
-```
-
-__NOTE: There is no wrong paradigm, they both have their strengths and weaknesses__
-
-## Three principles of OO programming (or something)
-
-I think that any rigid formalism around the 'tenets' of proper OO design is a little contrived... but people often refer to the 3 principles (read: benefits) of design:
-
-1. Encapsulation
-2. Polymorphism
-3. Inheritance
-
-_source: [https://python.g-node.org/python-summerschool-2013/_media/wiki/oop/oo_design_2013.pdf](https://python.g-node.org/python-summerschool-2013/_media/wiki/oop/oo_design_2013.pdf)_
-
-### Encapsulation
-
-Encapsulation allows you to create proper abstractions and abstractions are _THE_ most powerful concept of computer science.  Encapsulation is the practice of only exposing what is necessary to the outside world (i.e. code outside of your class).  Think of the methods and instance variables as the interface into the code contained within the object.  This lets the programmer dictate how their code is used and actually can force people to think differently.  One of my favorite examples of good OO design principles is within the `scikit-learn` library.  Do not worry if you do not understand any of the code here or the algorithms implemented... that is the joy of OO design and proper encapsulation.
-
-All you have to understand is the following concepts:
-
-> A machine learning model is an interface.  It takes data and labels.  From these data and labels it learns what patterns are associated with what labels.  This process is called fitting (or training) a model.  If you then give it data without labels, it can predict what those labels should be.  This is all we need to know and the library has properly abstracted all the messy details from us.
-
+And if you wanted to flatten a 2-dimesionsional list:
 
 ```python
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.datasets import load_iris
+In [1]: L = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 
-iris = load_iris()
-
-# get data and labels
-X, y = iris.data, iris.target
-
-# create a classifier object.  
-clf = KNeighborsClassifier(n_neighbors=1)
-
-# Initialization state == number of neighbors.
-# this takes some domain knowledge of the internals of
-# the object.  Most libraries use sane defaults however
-#
-# clf = KNeighborsClassifier()
-
-# Train our classifier model (change internal state)
-clf.fit(X, y)
-
-# predict on new values
-y_pred = clf.predict(new_data)
+In [2]: [item for row in L for item in row]
+Out[2]: [1, 2, 3, 4, 5, 6, 7, 8, 9]
 ```
 
-Notice how `.fit()` did not return any value?  If this were a functional interface, data would go in and a trained model would come out.  `scikit-learn` adheres to many principles of good OO design and because of this, `.fit()` simply mutates the internal state of the classifier.  It is in this internal state (variables) that the trained model (and its parameters) resides.
+Note the order of the loop statements.
 
-### Inheritance (extensibility)
 
-![inheritance](http://techsharer.com/wp-content/uploads/2013/11/TIJ308.png)
+### If statements in list comprehensions
 
-Inheritance is the ability of one class to override behavior of its 'parent' class to allow for customized behavior.  With inheritance, a 'child' class has all of the features and functionality (methods) of its 'parent' unless explicitly overridden.  Stepping away from our `scikit-learn` example for a second here, I will demonstrate inheritance with a much simpler example.
+If statements have a weird syntax in a list comprehension:
 
 ```python
-class Animal(object):
-    def __init__(self, name):
-        self.name = name
+In [3]: L = [4, 6, 3, 2, 5]
 
-    def speak(self):
-        print "My name is " + self.name
-
-    def eat(self, food):
-        print "I love " + food
-
-frank = Animal("Frank")
-frank.speak() #=> "My name is Frank"
-frank.eat("bananas") #=> "I love bananas"
-
-class Dog(Animal):
-    def __init__(self, name):
-        Animal.__init__(self, name)
-
-    def eat(self):
-        print "I like biscuits!"
-
-fido = Dog("Fido")
-fido.speak() #=> "My name is Fido"
-fido.eat() #=> "I like biscuits!"
+In [4]: ["even" if item % 2 == 0 else "odd" for item in L]
+Out[4]: ['even', 'even', 'odd', 'even', 'odd']
 ```
 
-### Polymorphism
-
-Related to (empowered by) inheritance, polymorphism enables us to use a shared interface for similar objects, while still allowing each object to have its own specialized behavior. It does this through inheritance of a common parent and subclassing.
-
-> Polymorphism refers to a programming language's ability to process objects differently depending on their data type or class. More specifically, it is the ability to redefine methods for derived classes.
-
-For `scikit-learn` this simply means that the internals of the model you are training can be drastically different (i.e. kNN vs. Decision Tree) but the methods you call for each are identical.
+You can also use an if statement as a filter, to only include some of the items. Here we include only the even numbers:
 
 ```python
-from sklearn import tree
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.datasets import load_iris
+In [5]: L = [4, 6, 3, 2, 5]
 
-iris = load_iris()
-
-# get data and labels
-X, y = iris.data, iris.target
-
-# create a kNN classifier object.  
-clf = KNeighborsClassifier(n_neighbors=1)
-
-# Train our classifier model
-clf.fit(X, y)
-
-# predict on new values
-y_pred = clf.predict(new_data)
-
-# Decide we want to experiment with a DecisionTree
-clf = tree.DecisionTreeClassifier()
-
-# Train our classifier model
-clf.fit(X, y)
-
-# predict on new values
-y_pred = clf.predict(new_data)
+In [6]: [item for item in L if item % 2 == 0]
+Out[6]: [4, 6, 2]
 ```
-Notice that since a DecisionTree model and kNN model both have a `fit()` method defined that takes the same inputs (or many of the same), we can optimistically call `fit()` on whatever type of model the `clf` variable references.  This allows us to do some pretty powerful things with our models (i.e. GridSearch parameter optimization) which we will see later in the course.
 
 
-<!-- References -->
-[1]: http://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping
-[3]: http://robertheaton.com/2014/02/09/pythons-pass-by-object-reference-as-explained-by-philip-k-dick/
-[4]: http://www.sciencephotography.com/xrayfish/xray%20jan24-06/Russian-doll1.jpg
+### Generator comprehensions
 
-<!-- Easter Eggs -->
-[gotchas]: http://docs.python-guide.org/en/latest/writing/gotchas/
+You can make it a generator instead of a list if you're just going to be looping over the result. You do this by using round brackets instead of square ones:
+
+```python
+L = ["zack desario", "giovanna thron", "ryan orban", "jonathan dinu"]
+for name in (item.split()[0] for item in L):
+    print name
+```
+
+Another example is if you're just going to put the result into another function that can use a generator:
+
+```python
+In [1]: L = ["zack desario", "giovanna thron", "ryan orban", "jonathan dinu"]
+
+In [2]: "-".join(item.split()[0] for item in L)
+Out[2]: 'zack-giovanna-ryan-jonathan'
+```
+
+
+## Lambda Functions
+
+In Python, you can use `lambda` to define unnamed functions. This is really useful for being able to customize `sort` and use functions like `map`, `filter` and `reduce`.
+
+```python
+# Sort by first element of tuple
+L = [(2, 4), (5, 3), (6, 8), (4, 1)]
+L.sort(key=lambda x: x[0])
+```
+
+All things you can do with list comprehensions you can also do with `map`. It's more "Pythonic" to use list comprehensions, but understanding how to write maps is key for numpy and pandas, modules we will be using heavily.
+
+```python
+# Double every element of a list
+def double_list(L):
+    return map(lambda x: x * 2, L)
+```
+
+The if statement syntax is very similar to list comprehension syntax. Here's the same example (double positive numbers but not negative numbers):
+
+```python
+map(lambda x: x * 2 if x > 0 else x, L)
+```
+
+You can also use `map` with already implemented functions, like `abs` (absolute value):
+
+```python
+L = [0, 5, -8, 9, -3, -2]
+M = map(abs, L)  # [0, 5, 8, 9, 3, 2]
+```
+
+The build-in `reduce` can be used to implement aggregation functions. Here's an implementation of `sum` (if sum wasn't already implemented in python):
+
+```python
+def sum(L):
+    total = 0
+    for x in L:
+        total += x
+    return total
+```
+
+But we can do this so much more simply if we use `reduce`. Here `total` is the running total and `x` is the new element from the list.
+
+```python
+def sum(L):
+    return reduce(lambda total, x: total + x, L)
+```
+
+And here's a `len` function. Note that we gave an initial value of 0. The default initial value is the first element of the list, which works fine for `sum`, but not for `len`.
+
+```python
+def len(L):
+    return reduce(lambda total, x: total + 1, L, 0)
+```
+
+
+## Sets and Dictionaries
+
+Python has some specialized datatypes that come in very handy!
+
+### Dictionaries
+
+Dictionaries are an implementation of hash tables (like Java's hashmaps if you're familiar with them). It's basically a way of matching key, value pairs. Here is an example:
+
+```python
+homestate = {"giovanna": "maine", "ryan": "california", "katie": "michigan", "zack": "new york"}
+```
+
+You can easily lookup a person's homestate like this:
+
+```python
+print homestate['katie']
+```
+
+Dictionaries are more powerful than they first appear. It's import to note that it's always really fast to access a dictionary. In a list, if you want to find an element without having the index, you have to search through the whole list. In a dictionary, you can access an element by key quickly!
+
+
+#### Looping over dictionaries
+
+Here are a couple ways of iterating through a dictionary:
+
+```python
+for k in d:
+    # iterations over the keys
+```
+
+DO NOT do `for k in d.keys()`. This is completely unneccessary. You are creating a list of all your keys which is a waste of time and space.
+
+```python
+for k, v in d.iteritems():
+    # iterates over key, value pairs
+```
+
+Here `iteritems` is a generator, so it's preferred over `items` when you're looping.
+
+
+#### Checking membership in a dictionary
+
+If you would like to check if a key is in a dictionary, just do this:
+
+```python
+if k in d:
+    # do something
+```
+
+DO NOT do `if k in d.keys():`. This is horribly inefficient. You are creating a list of your keys and then searching in a list. Searching in a list is slow, but searching in a dictionary is fast! Keep it as a dictionary to get all the speed power of dictionaries! You can also add and remove to a dictionary quickly. Lists are only fast if you are adding or removing from the end (if you change the beginning, you have to slide all the elements over to make or fill in space).
+
+
+### Counter and defaultdict
+
+You are very often using dictionaries to count things or where the type is always the same. In the module `collections` there are a couple useful datatypes.
+
+`Counter` and `defaultdict` have default values for keys that haven't been seen before. For a `Counter`, the default value will be 0. For a `defaultdict`, the default value will be dependent on what you give it.
+
+With a standard dictionary, you can't access a new key:
+
+```python
+In [1]: d = {}
+
+In [2]: d['abc']
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+<ipython-input-6-e51fd128be60> in <module>()
+----> 1 d['abc']
+
+KeyError: 'abc'
+```
+
+But with a `Counter` or `defaultdict`, this would be no problem.
+
+```python
+In [1]: from collections import Counter, defaultdict
+
+In [2]: c = Counter()
+
+In [3]: c['abc']
+Out[3]: 0
+
+In [4]: d = defaultdict(str)
+
+In [5]: d['abc']
+Out[5]: ''
+```
+
+Note that `d` here has a default value of an empty string since we gave it the argument `str`. Besides how they deal with new keys, these two datatypes work the same as standard dictionaries.
+
+#### Examples
+
+Let's say you want to get a count of the number of occurrences of each character in a string. You could do this:
+
+```python
+letter_count = {}
+for char in word:
+    letter_count[char] = letter_count.get(char, 0) + 1
+```
+
+If you use `Counter`, you can just do this:
+```python
+from collections import Counter
+letter_count = Counter(word)
+```
+
+Let's say you have a list. You want to know all the indicies that each value appears on. With a stardard dictionary, you could do this:
+
+```python
+lst = ['a', 'b', 'a', 'c', 'd', 'c', 'a']
+d = {}
+for i, item in enumerate(lst):
+    if item in d:
+        d[item].append(i)
+    else:
+        d[item] = [i]
+# result: {'a': [0, 2, 6], 'b': [1], 'c': [3, 5], 'd': [4]}
+```
+
+A `defaultdict` lets you choose a default type for the values so you don't have to do a special case when it's not already in your dictionary. The following code does the same as above.
+
+```python
+from collections import defaultdict
+d = defaultdict(list)
+for i, item in enumerate(lst):
+    d[item].append(i)
+```
+
+
+### Sets
+
+Sets are basically value-less dictionaries. If you have a list that you're going to be regularly checking membership of, you should be using a set.
+
+Here's an example to get all the unique words in a string that are longer than 3 characters:
+
+```python
+s = set()
+for word in string.split():
+    if len(word) > 3:
+        s.add(word)
+```
+
+You can check membership in a set:
+
+```python
+if 'house' in s:
+    # do something
+```
+
+Adding to and checking membership in a set are fast operations (just like in a dictionary).
+
+Sets are also useful for removing duplicates in a list (if you don't care about order):
+
+```python
+L_unique = list(set(L))
+```
+
+### Order of dictionaries and sets
+Dictionaries and sets are **unordered**. This means that if you iterate through them multiple times you will not necessarily get the items in the same order (though computers are deterministic so it will often be the same order, but it is in no way a guarantee). Usually this doesn't matter. There is an `OrderedDict` datatype in the `collections` module if it is ever important to maintain the order in your dictionary.
+
+
+## Mutable vs Immutable
+
+Python datatypes can be mutable or immutable.
+
+Mutable datatypes can be modified after they are created. Examples of **mutable** datatypes are:
+* lists
+* sets
+* dictionaries
+
+Immutable datatypes cannot be modified once they are created. Examples of **immutable** datatypes are:
+* ints
+* floats
+* strings
+* tuples (like immutable lists)
+
+For example, you can do this with a list:
+
+```python
+In [1]: L = [1, 2, 3, 4, 5, 6]
+
+In [2]: L[3] = 100
+
+In [3]: L
+Out[3]: [1, 2, 3, 100, 5, 6]
+```
+
+However, if you try to do the same thing with an immutable type like a string or a tuple, you will get an error:
+
+```python
+In [4]: str = "blah"
+
+In [5]: str[3] = 'z'
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-9-6f44c398cf3c> in <module>()
+----> 1 str[3] = 'z'
+
+TypeError: 'str' object does not support item assignment
+
+In [6]: t = (1, 2, 3, 4, 5, 6)  # a tuple
+
+In [7]: t[3] = 100
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-11-9132167f4634> in <module>()
+----> 1 t[3] = 100
+
+TypeError: 'tuple' object does not support item assignment
+```
+
+It's generally good form to use a tuple instead of a list if you won't be modifying it. If you're not going to use the full functionality of the list, a tuple will suffice.
+
+### Mutability and dictionary keys
+
+A big use case of immutable types is with dictionaries. At some point you will probably encounter this error:
+
+```python
+TypeError: unhashable type: 'list'
+```
+
+This comes up if you're trying to make the key of a dictionary a mutable type. If you want to have a list as a key, you'll need to transform it to a tuple or another immutable type.
+
+The same goes for items in a set.
+
+
+## Permutations and Combinations
+
+The `itertools` module functions for getting all the combinations and permutations of an interable. Both of these functions are generators.
+
+```python
+In [1]: from itertools import permutations, combinations
+
+In [2]: L = [1, 2, 3]
+
+In [3]: for perm in permutations(L):
+   ...:     print perm
+   ...:
+(1, 2, 3)
+(1, 3, 2)
+(2, 1, 3)
+(2, 3, 1)
+(3, 1, 2)
+(3, 2, 1)
+
+In [4]: for comb in combinations(L, 2):
+   ...:     print comb
+   ...:
+(1, 2)
+(1, 3)
+(2, 3)
+```
+
+
+## File I/O
+
+Reading from and writing to files in python is pretty simple.
+
+### File Input
+
+There are several ways to read from a file.
+
+The preferred way of reading a file is by looping over the lines:
+
+```python
+f = open("myfile.txt")
+for line in f:
+    # do something
+f.close()
+```
+
+Don't forget to close the file at the end!
+
+You can also use the `readline` method to get a single line:
+
+```python
+f = open("myfile.txt")
+line = True
+while line:
+    line = f.readline()
+    # do something
+f.close()
+```
+
+There are also two functions for reading the whole file at once: `read` (returns the whole file as a string) and `readlines` (returns the file as a list of strings). It is generally bad form to use these. They load the whole file into memory, which will be really costly with a large file.
+
+If you forget to close the file, you can also use this syntax:
+
+```python
+with open("myfile.txt") as f:
+    # do stuff with the file
+```
+
+Sometimes this is nice, but if you have a lot of nested indentations it can make your code hard to read.
+
+### File Output
+
+To write to a file, you just need to add a "w" parameter when you open the file and then use the `write` method:
+
+```python
+f = open("out.txt", 'w')
+f.write("Hello!\n")
+f.close()
+```
+
+Note that it won't automatically add new lines.
+
+Using the `'w'` parameter will overwrite the file. If you'd like to add to the end of the file instead, you can use the `'a'` parameter.
+
+
+## Exception Handling
+
+You can catch exceptions in python with the following syntax:
+
+```python
+try:
+    f = open(filename)
+except IOError:
+    print "Couldn't open file %s" % filename
+```
+
+### Guidelines
+
+1. You should *always* give the type of error that you are excepting. If you just do a blanket `except:`, you could easily except away your silly typo.
+
+2. Keep as little code in the try block as possible. If there's one line of code that could produce an error, that is the only line of code which would be within the try except block. You want to make sure to not accidentally catch a real error.
+
+3. You should also avoid using try excepts whenever possible. For example, I could do the following BAD CODE:
+
+    ```python
+    try:
+        result = L[i]
+    except IndexError:
+        result = -1
+    ```
+
+    Exception handling is expensive! It takes time. You can tell what condition would make this fail, right? If the index is too large we'll get the error, so let's just use an if statement:
+
+    ```python
+    if i < len(L):
+        result = L[i]
+    else:
+        result = -1
+    ```
+
+    The times when you should use it are when you need to run the code in order to determine if it will produce an error. Two times you frequently see it coming up are in reading from files and making web requests. You need to actually run the code to know whether there's going to be an issue.
+
+
+# Python style
+
+Python has some standard guidelines for style. It's worth taking a look at the [pep8 style guidelines](http://legacy.python.org/dev/peps/pep-0008/).
+
+Many companies force you to follow style guidelines. Why? If everyone writes with the same style it makes it much easier to read other people's code. Whenever you're writing code keep in mind: **Code is read more than it is written**.
+
+Lucky for us, anaconda comes with `pep8` so you can just run it on your python file and it will tell you what to change:
+
+```
+pep8 myprogram.py
+```
+
+
+# Documentation
+
+Python documentation is really good! Here's some links:
+
+* [Python docs home](https://docs.python.org/2/index.html)
+* [Python tutorial](https://docs.python.org/2/tutorial/index.html)
+* [Lists, tuples, sets, dictionaries](https://docs.python.org/2/tutorial/datastructures.html)
+* [itertools](https://docs.python.org/2/library/itertools.html)
+* [collections](https://docs.python.org/2/library/collections.html)
+
+# [Assignment](assignment.md)
