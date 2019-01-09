@@ -43,7 +43,7 @@ Using atom text editor, open ./src/assignment_3.2.py and write your program.
     X-DSPAM-Confidence:    0.8475
 
 Count these lines and extract the floating point values from each of the lines and compute the average of those values and produce an output as shown below. Do not use the sum() function or a variable named sum in your solution.
-You can download the sample data at [./data/pymbox-short.txt](./data/pymbox-short.txt) when you are testing below enter mbox-short.txt as the file name.
+You can download the sample data at [./data/pymbox-short.txt](./tree/master/data/pymbox-short.txt) when you are testing below enter mbox-short.txt as the file name.
 
 Using atom text editor, open ./src/assignment_3.3.py and write your program.
 <br>Compare your output with 'Desired Output'
