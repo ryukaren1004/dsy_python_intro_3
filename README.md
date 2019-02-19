@@ -65,4 +65,32 @@ sum()
 
 ## [Glossary](./glossary_loop.md)
 
+# Strings
+
+### A string is a sequence
+
+### Getting the length of a string using len
+
+### Traversal through a string with a loop
+
+### String slices
+
+### Strings are immutable
+
+### Looping and counting
+
+### The in operator
+
+### String comparison
+
+### String methods
+
+### Parcing strings
+
+### Format operator
+
+## [Exercises](./exercises_string.md)
+
+## [Glossary](./glossary_string.md)
+
 # [Week 5 Assignments](assignment.md)
