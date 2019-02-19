@@ -17,16 +17,27 @@ You should make your own copy of the repository so that you can edit it and at t
 
 Ideally, you should regularly run steps 1-3. This will save your work as you go. And if you ever goof things up, you will have all the history, you can revert any file to how it was at any previous commit!
 
-## Exercise 
-1. Write a program that repeatedly prompts a user for integer numbers until the user enters 'done'. Once 'done' is entered, print out the largest and smallest of the numbers. If the user enters anything other than a valid number catch it with a try/except and put out an appropriate message and ignore the number. Enter 7, 2, bob, 10, and 4 for input data.
-Using atom text editor, open ./src/assignment_3.1.py and write your program.
+## Assignment 
+1.1 Write a program that repeatedly prompts a user for integer numbers until the user enters 'done'. Once 'done' is entered, print out the largest and smallest of the numbers. If the user enters anything other than a valid number catch it with a try/except and put out an appropriate message and ignore the number. Enter 7, 2, bob, 10, and 4 for input data.
+Using atom text editor, open ./src/assignment_3.1.1.py and write your program.
 <br>Compare your output with 'Desired Output'
 
     Desired Output:<br> 
-
+    
         Invalid input
         Maximum is 10
         Minimum is 2
+
+1.2 Rewrite above assignment 1.1 by using while loop and for loop. Append the numbers user enters into a list variable called numbers. Create a function called compute_max_min(numbers)</b>
+Using atom text editor, open ./src/assignment_3.1.2.py and write your program.
+<br>Compare your output with 'Desired Output'
+
+    Desired Output:<br> 
+    
+        Invalid input
+        Maximum is 10
+        Minimum is 2
+
 
 2. Write code using find() and string slicing to extract the number at the end of the line below. Convert the extracted value to a floating point number and print it out.
 

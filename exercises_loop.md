@@ -9,3 +9,19 @@
     16 3 5.333333333333333
 
 <b>Exercise 2: Write another program that prompts for a list of numbers as above and at the end prints out both the maximum and minimum of the numbers instead of the average.</b>
+
+<b>Exercise 3: Rewrite above Exercise 1 by using while loop and for loop. Append the numbers user entered into a list variable called numbers.</b>
+
+    ## initialization
+    numbers = list()  ## numbers = []
+
+    ## while loop
+    num = input('Enter a number: ')
+    num = int(num)
+    numbers.append(num)
+
+    ## for loop
+    for num in numbers:
+       ## write your code
+
+
