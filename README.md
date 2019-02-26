@@ -93,4 +93,24 @@ sum()
 
 ## [Glossary](./glossary_string.md)
 
+# FILES
+
+## Opening files
+
+## Text files and lines
+
+## Reading files
+
+## Searching throigh a file
+
+## Letting the user choose the file name
+
+## Using try, except, and open
+
+## Writing files
+
+## [Exercises](./exercises_file.md)
+
+## [Glossary](./glossary_file.md)
+
 # [Week 5 Assignments](assignment.md)
