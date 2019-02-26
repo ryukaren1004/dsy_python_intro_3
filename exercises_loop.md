@@ -43,11 +43,11 @@ Print N lines, one corresponding to each i.
 
 <b>Sample Output</b>
 
-0
-1
-4
-9
-16
+    0
+    1
+    4
+    9
+    16
 
 <b>Exercise 5:
 
